@@ -4,7 +4,7 @@
 /**
  * @file qnx_mock.h
  * @brief Mock QNX functions for Linux development and testing
- * 
+ *
  * This file provides mock implementations of QNX-specific functions
  * to allow development and testing on Linux systems without QNX.
  */
@@ -26,7 +26,8 @@ typedef int rcvid_t;
 #define _IO_MAX 0x100
 
 // Mock message info structure (declare before use)
-struct _msg_info {
+struct _msg_info
+{
     uint32_t nd;
     uint32_t srcnd;
     pid_t pid;
@@ -42,45 +43,66 @@ struct _msg_info {
 };
 
 // Mock QNX functions
-static inline chid_t ChannelCreate(unsigned flags) {
+static inline chid_t ChannelCreate(unsigned flags)
+{
     (void)flags;
     static int next_chid = 1;
     return next_chid++;
 }
 
-static inline int ChannelDestroy(chid_t chid) {
+static inline int ChannelDestroy(chid_t chid)
+{
     (void)chid;
     return 0;
 }
 
-static inline coid_t ConnectAttach(uint32_t nd, pid_t pid, chid_t chid, 
-                                   unsigned index, int flags) {
-    (void)nd; (void)pid; (void)chid; (void)index; (void)flags;
+static inline coid_t ConnectAttach(uint32_t nd, pid_t pid, chid_t chid,
+                                   unsigned index, int flags)
+{
+    (void)nd;
+    (void)pid;
+    (void)chid;
+    (void)index;
+    (void)flags;
     static int next_coid = 1;
     return next_coid++;
 }
 
-static inline int ConnectDetach(coid_t coid) {
+static inline int ConnectDetach(coid_t coid)
+{
     (void)coid;
     return 0;
 }
 
-static inline rcvid_t MsgReceive(chid_t chid, void *msg, size_t bytes, 
-                                struct _msg_info *info) {
-    (void)chid; (void)msg; (void)bytes; (void)info;
+static inline rcvid_t MsgReceive(chid_t chid, void *msg, size_t bytes,
+                                 struct _msg_info *info)
+{
+    (void)chid;
+    (void)msg;
+    (void)bytes;
+    (void)info;
     // Mock: no message available
     errno = ETIMEDOUT;
     return -1;
 }
 
-static inline int MsgReply(rcvid_t rcvid, int status, const void *msg, size_t bytes) {
-    (void)rcvid; (void)status; (void)msg; (void)bytes;
+static inline int MsgReply(rcvid_t rcvid, int status, const void *msg, size_t bytes)
+{
+    (void)rcvid;
+    (void)status;
+    (void)msg;
+    (void)bytes;
     return 0;
 }
 
-static inline int MsgSend(coid_t coid, const void *smsg, size_t sbytes, 
-                         void *rmsg, size_t rbytes) {
-    (void)coid; (void)smsg; (void)sbytes; (void)rmsg; (void)rbytes;
+static inline int MsgSend(coid_t coid, const void *smsg, size_t sbytes,
+                          void *rmsg, size_t rbytes)
+{
+    (void)coid;
+    (void)smsg;
+    (void)sbytes;
+    (void)rmsg;
+    (void)rbytes;
     return 0;
 }
 
@@ -88,8 +110,10 @@ static inline int MsgSend(coid_t coid, const void *smsg, size_t sbytes,
 #ifdef __linux__
 // Linux already has pthread_setname_np, don't redefine
 #else
-static inline int pthread_setname_np(pthread_t thread, const char *name) {
-    (void)thread; (void)name;
+static inline int pthread_setname_np(pthread_t thread, const char *name)
+{
+    (void)thread;
+    (void)name;
     return 0;
 }
 #endif

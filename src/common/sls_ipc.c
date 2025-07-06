@@ -3,7 +3,7 @@
  * @brief Implementation of QNX IPC system for Space Launch System
  */
 
-#include "qnx_mock.h"  // Must be first for QNX compatibility
+#include "qnx_mock.h" // Must be first for QNX compatibility
 #include "sls_ipc.h"
 #include "sls_logging.h"
 #include "sls_utils.h"

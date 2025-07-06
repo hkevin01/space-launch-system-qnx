@@ -1,7 +1,7 @@
 #ifndef SLS_IPC_H
 #define SLS_IPC_H
 
-#include "qnx_mock.h"  // QNX compatibility layer
+#include "qnx_mock.h" // QNX compatibility layer
 #include "sls_types.h"
 
 /**

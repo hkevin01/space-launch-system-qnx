@@ -185,7 +185,7 @@ static void update_vehicle_dynamics(double dt)
         g_fc_state.current_phase <= PHASE_ORBIT_INSERTION)
     {
         // Vehicle is in flight - apply thrust and gravity
-        
+
         // Calculate thrust based on mission phase
         double thrust_percentage = 100.0;
         if (g_fc_state.current_phase == PHASE_ASCENT)
@@ -210,7 +210,7 @@ static void update_vehicle_dynamics(double dt)
     {
         // Vehicle is igniting engines but still on ground support
         vs->thrust = VEHICLE_MAX_THRUST_N * 0.5; // 50% thrust during ignition
-        
+
         // Ground support counteracts gravity - vehicle stays at ground level
         vs->acceleration[0] = 0.0;
         vs->acceleration[1] = 0.0;
@@ -218,7 +218,7 @@ static void update_vehicle_dynamics(double dt)
         vs->velocity[0] = 0.0;
         vs->velocity[1] = 0.0;
         vs->velocity[2] = 0.0;
-        
+
         // Keep vehicle at exactly ground level
         vs->position[2] = 0.0;
         vs->altitude = 0.0;
@@ -227,7 +227,7 @@ static void update_vehicle_dynamics(double dt)
     {
         // Vehicle is in pre-launch phase - ground support active
         vs->thrust = 0.0;
-        
+
         // Ground support system counteracts gravity
         vs->acceleration[0] = 0.0;
         vs->acceleration[1] = 0.0;
@@ -235,7 +235,7 @@ static void update_vehicle_dynamics(double dt)
         vs->velocity[0] = 0.0;
         vs->velocity[1] = 0.0;
         vs->velocity[2] = 0.0;
-        
+
         // Keep vehicle at exactly ground level
         vs->position[2] = 0.0;
         vs->altitude = 0.0;
@@ -481,13 +481,13 @@ static void process_status_updates(void)
 {
     // Get current mission phase from main system
     mission_phase_t current_main_phase = sls_get_current_mission_phase();
-    
+
     // Check if phase has changed
     if (current_main_phase != g_fc_state.current_phase)
     {
         handle_mission_phase_change(current_main_phase);
     }
-    
+
     // Process any pending IPC messages
     sls_ipc_process_messages();
 }

@@ -14,7 +14,7 @@ The simulation follows a modular, microkernel-based architecture:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Main Control Loop                     │
+│                    Main Control Loop                    │
 ├─────────────────────────────────────────────────────────┤
 │                   QNX Neutrino RTOS                     │
 ├─────────────────┬─────────────────┬─────────────────────┤

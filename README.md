@@ -113,12 +113,22 @@ The project includes comprehensive testing:
 
 ## 📚 Documentation
 
-Detailed documentation is available in the `docs/` directory:
+Comprehensive documentation is available in the `docs/` directory:
 
-- [System Design](docs/system-design.md)
-- [API Reference](docs/api-reference.md)
-- [User Guide](docs/user-guide.md)
-- [Developer Guide](docs/developer-guide.md)
+### Core Documentation
+- [System Design](docs/system-design.md) - Overall architecture and design principles
+- [User Guide](docs/user-guide.md) - Getting started and operation procedures
+- [Simulation Architecture](docs/simulation-architecture.md) - Technical architecture details
+
+### QNX-Specific Documentation
+- [QNX Overview](docs/qnx-overview.md) - Why QNX for aerospace applications
+- [QNX Implementation](docs/qnx-implementation.md) - How QNX is used in this project
+- [QNX Real-Time Features](docs/qnx-realtime-features.md) - Real-time capabilities and timing
+- [QNX Integration Guide](docs/qnx-integration.md) - Complete system integration details
+- [QNX Deployment Guide](docs/qnx-deployment.md) - Production deployment procedures
+
+### Safety and Operations
+- [Safety & Fault Tolerance](docs/safety-and-fault-tolerance.md) - Safety-critical design patterns
 
 ## 🤝 Contributing
 

@@ -8,9 +8,33 @@ set -e  # Exit on any error
 # Get the directory where this script is located (project root)
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXECUTABLE="$PROJECT_ROOT/bin/space_launch_sim"
+GUI_DIR="$PROJECT_ROOT/gui"
 
 echo "QNX Space Launch System - Quick Launch"
 echo "====================================="
+
+# Parse command line arguments first to handle --gui early
+GUI_MODE="false"
+for arg in "$@"; do
+    case $arg in
+        -g|--gui)
+            GUI_MODE="true"
+            break
+            ;;
+    esac
+done
+
+# If GUI mode requested, launch GUI immediately
+if [ "$GUI_MODE" = "true" ]; then
+    echo "Launching GUI mode..."
+    echo ""
+    if [ -f "$GUI_DIR/launch_gui.sh" ]; then
+        exec "$GUI_DIR/launch_gui.sh"
+    else
+        echo "Error: GUI launcher not found: $GUI_DIR/launch_gui.sh"
+        exit 1
+    fi
+fi
 
 # Check if executable exists
 if [ ! -f "$EXECUTABLE" ]; then
@@ -48,6 +72,10 @@ while [[ $# -gt 0 ]]; do
             SHOW_HELP="true"
             shift
             ;;
+        -g|--gui)
+            # Already handled above
+            shift
+            ;;
         -d|--debug)
             DEBUG_MODE="true"
             shift
@@ -78,6 +106,7 @@ if [ "$SHOW_HELP" = "true" ]; then
     echo ""
     echo "Options:"
     echo "  -h, --help           Show this help message"
+    echo "  -g, --gui            Launch GUI mode instead of terminal"
     echo "  -d, --debug          Run in debug mode with GDB"
     echo "  -t, --time TIME      Set mission time (auto, now, t-600, etc.)"
     echo "  --now                Start at T-0 (immediate launch)"
@@ -85,6 +114,7 @@ if [ "$SHOW_HELP" = "true" ]; then
     echo ""
     echo "Examples:"
     echo "  $0                   # Run with default settings (T-2 hours)"
+    echo "  $0 --gui             # Launch GUI mode"
     echo "  $0 --now             # Start at T-0 (immediate launch)"
     echo "  $0 -t t-600          # Start at T-10 minutes"
     echo "  $0 --debug           # Run in debug mode"
