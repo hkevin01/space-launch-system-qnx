@@ -3,6 +3,7 @@
  * @brief Implementation of QNX IPC system for Space Launch System
  */
 
+#include "qnx_mock.h"  // Must be first for QNX compatibility
 #include "sls_ipc.h"
 #include "sls_logging.h"
 #include "sls_utils.h"
@@ -11,9 +12,12 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+
+#ifndef MOCK_QNX_BUILD
 #include <sys/neutrino.h>
 #include <sys/iomsg.h>
 #include <sys/dispatch.h>
+#endif
 
 // Internal structures
 typedef struct

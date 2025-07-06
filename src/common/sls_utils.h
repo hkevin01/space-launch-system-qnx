@@ -3,6 +3,7 @@
 
 #include "sls_types.h"
 #include <time.h>
+#include <pthread.h>
 
 /**
  * @file sls_utils.h
@@ -41,6 +42,10 @@ double sls_apply_sensor_calibration(double raw_value, double offset, double scal
 bool sls_validate_telemetry_point(const telemetry_point_t *point);
 bool sls_validate_sensor_data(const sensor_data_t *sensor);
 bool sls_validate_vehicle_state(const vehicle_state_t *state);
+
+// Global system state access (for simulation)
+mission_phase_t sls_get_current_mission_phase(void);
+double sls_get_mission_time(void);
 
 // Configuration utilities
 int sls_load_config_file(const char *filename);

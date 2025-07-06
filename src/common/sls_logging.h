@@ -2,6 +2,7 @@
 #define SLS_LOGGING_H
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <time.h>
 
 /**

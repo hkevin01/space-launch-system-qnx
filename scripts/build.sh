@@ -19,14 +19,16 @@ echo "Build type: $BUILD_TYPE"
 echo "Clean build: $CLEAN_BUILD"
 
 # Check for QNX environment
-if [ -z "$QNX_HOST" ] || [ -z "$QNX_TARGET" ]; then
-    echo "Error: QNX environment not set. Please source QNX environment script."
-    echo "Example: source /opt/qnx710/qnxsdp-env.sh"
-    exit 1
+if command -v qcc > /dev/null 2>&1; then
+    echo "QNX environment detected"
+    echo "QNX Host: $QNX_HOST"
+    echo "QNX Target: $QNX_TARGET"
+    QNX_BUILD=true
+else
+    echo "QNX environment not found - building in Linux simulation mode"
+    echo "Note: QNX-specific features will be mocked for development"
+    QNX_BUILD=false
 fi
-
-echo "QNX Host: $QNX_HOST"
-echo "QNX Target: $QNX_TARGET"
 
 # Change to project directory
 cd "$PROJECT_ROOT"

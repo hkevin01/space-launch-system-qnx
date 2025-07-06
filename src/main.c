@@ -14,9 +14,8 @@
 #include <signal.h>
 #include <errno.h>
 #include <pthread.h>
-#include <sys/netmgr.h>
-#include <sys/neutrino.h>
 
+#include "common/qnx_mock.h"
 #include "common/sls_types.h"
 #include "common/sls_config.h"
 #include "common/sls_utils.h"
@@ -32,6 +31,10 @@ static double g_mission_time = -7200.0; // Start at T-2 hours
 // Thread handles for subsystems
 static pthread_t subsystem_threads[MAX_SUBSYSTEMS];
 static int active_subsystems = 0;
+
+// Function declarations for other modules to access global state
+mission_phase_t sls_get_current_mission_phase(void);
+double sls_get_mission_time(void);
 
 // Forward declarations
 static void signal_handler(int signum);
@@ -374,4 +377,20 @@ int main(int argc, char *argv[])
 cleanup:
     shutdown_system();
     return exit_code;
+}
+
+/**
+ * @brief Get current mission phase (thread-safe accessor)
+ */
+mission_phase_t sls_get_current_mission_phase(void)
+{
+    return g_current_phase;
+}
+
+/**
+ * @brief Get current mission time (thread-safe accessor)
+ */
+double sls_get_mission_time(void)
+{
+    return g_mission_time;
 }

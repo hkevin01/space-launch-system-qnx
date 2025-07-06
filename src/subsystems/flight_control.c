@@ -46,6 +46,7 @@ static void update_autopilot(double dt);
 static void handle_mission_phase_change(mission_phase_t new_phase);
 static void simulate_atmospheric_effects(void);
 static void check_flight_constraints(void);
+static void process_status_updates(void); // New function declaration
 
 /**
  * @brief Flight Control Computer thread main function
@@ -70,6 +71,9 @@ void *flight_control_thread(void *arg)
         // Calculate time delta
         double dt = sls_time_diff(&g_fc_state.last_update, &loop_start);
         g_fc_state.last_update = loop_start;
+
+        // Process incoming status updates (including phase changes)
+        process_status_updates();
 
         // Update vehicle dynamics simulation
         update_vehicle_dynamics(dt);
@@ -176,11 +180,12 @@ static void update_vehicle_dynamics(double dt)
     // Update mission time
     vs->mission_time += dt;
 
-    // Simulate thrust if engines are running
+    // Apply physics based on mission phase and ground support
     if (g_fc_state.current_phase >= PHASE_LIFTOFF &&
         g_fc_state.current_phase <= PHASE_ORBIT_INSERTION)
     {
-
+        // Vehicle is in flight - apply thrust and gravity
+        
         // Calculate thrust based on mission phase
         double thrust_percentage = 100.0;
         if (g_fc_state.current_phase == PHASE_ASCENT)
@@ -193,7 +198,7 @@ static void update_vehicle_dynamics(double dt)
 
         // Calculate acceleration (F = ma)
         double thrust_accel = vs->thrust / vs->mass;
-        vs->acceleration[2] = thrust_accel - 9.81; // Subtract gravity
+        vs->acceleration[2] = thrust_accel - 9.81; // Thrust minus gravity
 
         // Fuel consumption
         double fuel_flow_rate = 1000.0; // kg/s (simplified)
@@ -201,10 +206,39 @@ static void update_vehicle_dynamics(double dt)
         vs->fuel_remaining = ((vs->mass - VEHICLE_DRY_MASS_KG) / VEHICLE_FUEL_MASS_KG) * 100.0;
         vs->fuel_remaining = sls_clamp(vs->fuel_remaining, 0.0, 100.0);
     }
+    else if (g_fc_state.current_phase == PHASE_IGNITION)
+    {
+        // Vehicle is igniting engines but still on ground support
+        vs->thrust = VEHICLE_MAX_THRUST_N * 0.5; // 50% thrust during ignition
+        
+        // Ground support counteracts gravity - vehicle stays at ground level
+        vs->acceleration[0] = 0.0;
+        vs->acceleration[1] = 0.0;
+        vs->acceleration[2] = 0.0;
+        vs->velocity[0] = 0.0;
+        vs->velocity[1] = 0.0;
+        vs->velocity[2] = 0.0;
+        
+        // Keep vehicle at exactly ground level
+        vs->position[2] = 0.0;
+        vs->altitude = 0.0;
+    }
     else
     {
+        // Vehicle is in pre-launch phase - ground support active
         vs->thrust = 0.0;
-        vs->acceleration[2] = -9.81; // Only gravity
+        
+        // Ground support system counteracts gravity
+        vs->acceleration[0] = 0.0;
+        vs->acceleration[1] = 0.0;
+        vs->acceleration[2] = 0.0;
+        vs->velocity[0] = 0.0;
+        vs->velocity[1] = 0.0;
+        vs->velocity[2] = 0.0;
+        
+        // Keep vehicle at exactly ground level
+        vs->position[2] = 0.0;
+        vs->altitude = 0.0;
     }
 
     // Integrate velocity
@@ -353,10 +387,14 @@ static void check_flight_constraints(void)
 {
     vehicle_state_t *vs = &g_fc_state.vehicle_state;
 
-    // Check altitude limits
-    if (vs->altitude < -100.0)
+    // Check altitude limits - only error if vehicle is in flight and below ground
+    if (vs->altitude < -10.0 && g_fc_state.current_phase >= PHASE_LIFTOFF)
     {
-        sls_log(LOG_LEVEL_ERROR, "FCC", "Vehicle below ground level: %.1f m", vs->altitude);
+        sls_log(LOG_LEVEL_ERROR, "FCC", "Vehicle below ground level during flight: %.1f m", vs->altitude);
+    }
+    else if (vs->altitude < -100.0)
+    {
+        sls_log(LOG_LEVEL_ERROR, "FCC", "Vehicle altitude severely out of bounds: %.1f m", vs->altitude);
     }
 
     // Check fuel levels
@@ -434,4 +472,22 @@ static void handle_mission_phase_change(mission_phase_t new_phase)
     default:
         break;
     }
+}
+
+/**
+ * @brief Process incoming status updates and phase changes
+ */
+static void process_status_updates(void)
+{
+    // Get current mission phase from main system
+    mission_phase_t current_main_phase = sls_get_current_mission_phase();
+    
+    // Check if phase has changed
+    if (current_main_phase != g_fc_state.current_phase)
+    {
+        handle_mission_phase_change(current_main_phase);
+    }
+    
+    // Process any pending IPC messages
+    sls_ipc_process_messages();
 }

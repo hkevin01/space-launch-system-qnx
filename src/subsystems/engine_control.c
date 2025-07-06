@@ -28,13 +28,13 @@ typedef enum
     ENGINE_STATE_RUNNING,
     ENGINE_STATE_SHUTDOWN,
     ENGINE_STATE_FAULT
-} engine_state_t;
+} engine_run_state_t;
 
 // Individual engine data
 typedef struct
 {
     int engine_id;
-    engine_state_t state;
+    engine_run_state_t state;
     engine_state_t engine_params;
     double ignition_time;
     double shutdown_time;

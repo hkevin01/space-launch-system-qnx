@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <time.h>
 #include <pthread.h>
 #include <unistd.h>

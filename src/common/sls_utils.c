@@ -3,6 +3,7 @@
  * @brief Implementation of utility functions for the Space Launch System simulation
  */
 
+#include "qnx_mock.h"
 #include "sls_utils.h"
 #include "sls_config.h"
 #include "sls_logging.h"
@@ -12,7 +13,7 @@
 #include <math.h>
 #include <errno.h>
 #include <pthread.h>
-#include <sys/neutrino.h>
+#include <time.h>
 
 // Forward declarations for subsystem thread functions
 extern void *flight_control_thread(void *arg);

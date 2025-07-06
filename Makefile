@@ -1,17 +1,32 @@
 # QNX Space Launch System Simulation Makefile
 
-# QNX SDK Configuration
+# Detect if QNX environment is available
+QNX_AVAILABLE := $(shell command -v qcc 2> /dev/null)
+
+# QNX SDK Configuration (if available)
 QNX_HOST ?= /opt/qnx710/host/linux/x86_64
 QNX_TARGET ?= /opt/qnx710/target/qnx7
 
-# Compiler and tools
-CC = qcc
-CXX = qcc
-AR = ntoaarch64-ar
-LD = ntoaarch64-ld
-
-# Target architecture
-ARCH = aarch64le
+# Build mode detection
+ifdef QNX_AVAILABLE
+    BUILD_MODE = qnx
+    CC = qcc
+    CXX = qcc
+    AR = ntoaarch64-ar
+    LD = ntoaarch64-ld
+    ARCH = aarch64le
+    PLATFORM_CFLAGS = -Vgcc_ntoaarch64le -DVARIANT_le -D_QNX_SOURCE
+    PLATFORM_LDFLAGS = -Vgcc_ntoaarch64le -lang-c++
+else
+    BUILD_MODE = linux
+    CC = gcc
+    CXX = g++
+    AR = ar
+    LD = ld
+    ARCH = x86_64
+    PLATFORM_CFLAGS = -DMOCK_QNX_BUILD -D_GNU_SOURCE
+    PLATFORM_LDFLAGS = 
+endif
 
 # Project directories
 SRCDIR = src
@@ -21,19 +36,23 @@ LIBDIR = lib
 TESTDIR = tests
 
 # Compiler flags
-CFLAGS = -Wall -Wextra -std=c11 -O2 -g
-CXXFLAGS = -Wall -Wextra -std=c++17 -O2 -g
-LDFLAGS = -Wl,--gc-sections
-
-# QNX specific flags
-QNX_CFLAGS = -Vgcc_ntoaarch64le -DVARIANT_le -D_QNX_SOURCE
-QNX_LDFLAGS = -Vgcc_ntoaarch64le -lang-c++
+CFLAGS = -Wall -Wextra -std=c11 -O2 -g $(PLATFORM_CFLAGS)
+CXXFLAGS = -Wall -Wextra -std=c++17 -O2 -g $(PLATFORM_CFLAGS)
+LDFLAGS = -Wl,--gc-sections $(PLATFORM_LDFLAGS)
 
 # Include directories
-INCLUDES = -Isrc/common -Isrc/subsystems -I$(QNX_TARGET)/usr/include
+ifdef QNX_AVAILABLE
+    INCLUDES = -Isrc/common -Isrc/subsystems -I$(QNX_TARGET)/usr/include
+else
+    INCLUDES = -Isrc/common -Isrc/subsystems
+endif
 
 # Libraries
-LIBS = -lm -lpthread -lsocket -lc
+ifdef QNX_AVAILABLE
+    LIBS = -lm -lpthread -lsocket -lc
+else
+    LIBS = -lm -lpthread
+endif
 
 # Source files
 COMMON_SRCS = $(wildcard $(SRCDIR)/common/*.c)
@@ -58,9 +77,24 @@ TEST_OBJS = $(TEST_SRCS:$(TESTDIR)/%.c=$(BUILDDIR)/tests/%.o)
 TEST_TARGET = $(BINDIR)/run_tests
 
 # Default target
-.PHONY: all clean test install run help directories
+.PHONY: all clean test install run help directories info
 
-all: directories $(TARGET)
+all: info directories $(TARGET)
+
+# Show build information
+info:
+	@echo "Build Configuration:"
+	@echo "  Build mode: $(BUILD_MODE)"
+	@echo "  Compiler: $(CC)"
+	@echo "  Architecture: $(ARCH)"
+ifdef QNX_AVAILABLE
+	@echo "  QNX Host: $(QNX_HOST)"
+	@echo "  QNX Target: $(QNX_TARGET)"
+else
+	@echo "  Platform: Linux simulation mode"
+	@echo "  Note: QNX features will be mocked for development"
+endif
+	@echo ""
 
 # Create necessary directories
 directories:
@@ -70,20 +104,20 @@ directories:
 # Main executable
 $(TARGET): $(ALL_OBJS)
 	@echo "Linking $@..."
-	@$(CC) $(QNX_LDFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+	@$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 	@echo "Build complete: $@"
 
 # Object file compilation rules
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@echo "Compiling $<..."
 	@mkdir -p $(dir $@)
-	@$(CC) $(QNX_CFLAGS) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Test compilation
 $(BUILDDIR)/tests/%.o: $(TESTDIR)/%.c
 	@echo "Compiling test $<..."
 	@mkdir -p $(dir $@)
-	@$(CC) $(QNX_CFLAGS) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Test target
 test: directories $(TEST_TARGET)
@@ -92,7 +126,7 @@ test: directories $(TEST_TARGET)
 
 $(TEST_TARGET): $(TEST_OBJS) $(filter-out $(MAIN_OBJ), $(ALL_OBJS))
 	@echo "Linking tests..."
-	@$(CC) $(QNX_LDFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+	@$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 # Run the simulation
 run: $(TARGET)

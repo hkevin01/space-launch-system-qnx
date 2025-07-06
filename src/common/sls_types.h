@@ -78,7 +78,8 @@ typedef enum
     SENSOR_CURRENT,
     SENSOR_POSITION,
     SENSOR_VELOCITY,
-    SENSOR_ANGULAR_RATE
+    SENSOR_ANGULAR_RATE,
+    SENSOR_ALTITUDE
 } sensor_type_t;
 
 // Telemetry data point
