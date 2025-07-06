@@ -18,7 +18,8 @@
 #define MAX_MESSAGE_LENGTH 512
 
 // Mission phases
-typedef enum {
+typedef enum
+{
     PHASE_PRELAUNCH = 0,
     PHASE_IGNITION,
     PHASE_LIFTOFF,
@@ -31,7 +32,8 @@ typedef enum {
 } mission_phase_t;
 
 // System states
-typedef enum {
+typedef enum
+{
     STATE_OFFLINE = 0,
     STATE_INITIALIZING,
     STATE_STANDBY,
@@ -42,7 +44,8 @@ typedef enum {
 } system_state_t;
 
 // Subsystem types
-typedef enum {
+typedef enum
+{
     SUBSYS_FLIGHT_CONTROL = 0,
     SUBSYS_ENGINE_CONTROL,
     SUBSYS_TELEMETRY,
@@ -54,7 +57,8 @@ typedef enum {
 } subsystem_type_t;
 
 // Priority levels for QNX scheduling
-typedef enum {
+typedef enum
+{
     PRIORITY_LOW = 10,
     PRIORITY_NORMAL = 20,
     PRIORITY_HIGH = 30,
@@ -63,7 +67,8 @@ typedef enum {
 } priority_level_t;
 
 // Sensor data types
-typedef enum {
+typedef enum
+{
     SENSOR_TEMPERATURE = 0,
     SENSOR_PRESSURE,
     SENSOR_ACCELERATION,
@@ -77,7 +82,8 @@ typedef enum {
 } sensor_type_t;
 
 // Telemetry data point
-typedef struct {
+typedef struct
+{
     uint32_t id;
     char name[MAX_NAME_LENGTH];
     sensor_type_t type;
@@ -91,7 +97,8 @@ typedef struct {
 } telemetry_point_t;
 
 // Sensor data structure
-typedef struct {
+typedef struct
+{
     uint32_t sensor_id;
     subsystem_type_t subsystem;
     sensor_type_t type;
@@ -104,11 +111,12 @@ typedef struct {
 } sensor_data_t;
 
 // Command structure
-typedef struct {
+typedef struct
+{
     uint32_t command_id;
     subsystem_type_t target_subsystem;
     char command[MAX_NAME_LENGTH];
-    void* parameters;
+    void *parameters;
     size_t param_size;
     priority_level_t priority;
     struct timespec timestamp;
@@ -116,7 +124,8 @@ typedef struct {
 } command_t;
 
 // Status message
-typedef struct {
+typedef struct
+{
     subsystem_type_t source;
     system_state_t state;
     mission_phase_t phase;
@@ -127,30 +136,32 @@ typedef struct {
 } status_message_t;
 
 // Vehicle state
-typedef struct {
+typedef struct
+{
     // Position and orientation
-    double position[3];      // X, Y, Z in meters
-    double velocity[3];      // Vx, Vy, Vz in m/s
-    double acceleration[3];  // Ax, Ay, Az in m/s²
-    double quaternion[4];    // Orientation quaternion
+    double position[3];         // X, Y, Z in meters
+    double velocity[3];         // Vx, Vy, Vz in m/s
+    double acceleration[3];     // Ax, Ay, Az in m/s²
+    double quaternion[4];       // Orientation quaternion
     double angular_velocity[3]; // Roll, pitch, yaw rates in rad/s
-    
+
     // Mission parameters
-    double mission_time;     // Seconds since T-0
-    double fuel_remaining;   // Percentage
-    double thrust;           // Newtons
-    double mass;            // Kilograms
-    
+    double mission_time;   // Seconds since T-0
+    double fuel_remaining; // Percentage
+    double thrust;         // Newtons
+    double mass;           // Kilograms
+
     // Environmental
-    double altitude;        // Meters above sea level
+    double altitude;         // Meters above sea level
     double dynamic_pressure; // Pascal
-    double mach_number;     // Mach
-    
+    double mach_number;      // Mach
+
     struct timespec timestamp;
 } vehicle_state_t;
 
 // Engine parameters
-typedef struct {
+typedef struct
+{
     double thrust_percentage;  // 0-100%
     double chamber_pressure;   // Pascal
     double fuel_flow_rate;     // kg/s
@@ -162,18 +173,20 @@ typedef struct {
 } engine_state_t;
 
 // Environmental conditions
-typedef struct {
-    double temperature;     // Kelvin
-    double pressure;        // Pascal
-    double humidity;        // Percentage
-    double wind_speed;      // m/s
-    double wind_direction;  // Degrees
-    double precipitation;   // mm/hr
+typedef struct
+{
+    double temperature;    // Kelvin
+    double pressure;       // Pascal
+    double humidity;       // Percentage
+    double wind_speed;     // m/s
+    double wind_direction; // Degrees
+    double precipitation;  // mm/hr
     struct timespec timestamp;
 } environmental_data_t;
 
 // Communication message types
-typedef enum {
+typedef enum
+{
     MSG_TELEMETRY = 0,
     MSG_COMMAND,
     MSG_STATUS,
@@ -183,18 +196,20 @@ typedef enum {
 } message_type_t;
 
 // IPC message structure
-typedef struct {
+typedef struct
+{
     message_type_t type;
     subsystem_type_t source;
     subsystem_type_t destination;
     uint32_t sequence_number;
     size_t data_length;
     struct timespec timestamp;
-    uint8_t data[];  // Variable length data
+    uint8_t data[]; // Variable length data
 } ipc_message_t;
 
 // Fault information
-typedef struct {
+typedef struct
+{
     uint32_t fault_id;
     subsystem_type_t subsystem;
     char description[MAX_MESSAGE_LENGTH];
@@ -206,7 +221,8 @@ typedef struct {
 } fault_info_t;
 
 // Go/No-Go status
-typedef struct {
+typedef struct
+{
     subsystem_type_t subsystem;
     bool go_status;
     char reason[MAX_MESSAGE_LENGTH];
