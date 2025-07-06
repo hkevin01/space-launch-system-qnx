@@ -1,0 +1,25 @@
+{
+    "enableAutoFixEnabled": true,
+    "enablePartialAcceptances": true,
+    "enableChatParticipant": true,
+    "github.copilot.enable": {
+        "*": true,
+        "yaml": true,
+        "plaintext": true,
+        "markdown": true,
+        "c": true,
+        "cpp": true,
+        "makefile": true
+    },
+    "github.copilot.chat.terminalChatLocation": "terminal",
+    "github.copilot.chat.welcomeMessage": "always",
+    "github.copilot.editor.enableAutoCompletions": true,
+    "github.copilot.editor.enableCodeActions": true,
+    "github.copilot.conversation.filterEnabled": false,
+    "github.copilot.advanced": {
+        "debug.overrideEngine": "",
+        "debug.testOverrideProxyUrl": "",
+        "debug.overrideProxyUrl": "",
+        "authProvider": "github"
+    }
+}
