@@ -121,8 +121,10 @@ Comprehensive documentation is available in the `docs/` directory:
 - [Simulation Architecture](docs/simulation-architecture.md) - Technical architecture details
 
 ### QNX-Specific Documentation
+- [QNX Simplified Guide](docs/qnx-simplified.md) - Easy-to-understand explanation of QNX
 - [QNX Overview](docs/qnx-overview.md) - Why QNX for aerospace applications
 - [QNX Implementation](docs/qnx-implementation.md) - How QNX is used in this project
+- [QNX Simulation Implementation](docs/qnx-simulation-implementation.md) - How our simulation uses QNX technology
 - [QNX Real-Time Features](docs/qnx-realtime-features.md) - Real-time capabilities and timing
 - [QNX Integration Guide](docs/qnx-integration.md) - Complete system integration details
 - [QNX Deployment Guide](docs/qnx-deployment.md) - Production deployment procedures

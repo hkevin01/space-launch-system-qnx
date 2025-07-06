@@ -1,6 +1,18 @@
 # QNX Documentation Index
 
-This directory contains comprehensive documentation about the QNX-based Space Launch System simulation, covering everything from basic concepts to advanced deployment procedures.
+This directory contains compreh7. **[QNX Real-Time Fea9. **[Safety & Fault Tolerance](safety-and-fault-tolerance.md)** - Safety-critical design
+   - Aerospace safety standards compliance
+   - Fault detection and recovery mechanisms
+   - Redundancy and failover strategies
+   - Safety integrity levels (SIL)
+
+10. **[QNX Deployment Guide](qnx-deployment.md)** - Production deploymentqnx-realtime-features.md)** - Real-time capabilities
+   - Scheduling algorithms and priorities
+   - Timing guarantees and deadline management
+   - Interrupt handling and latency analysis
+   - Performance optimization techniques
+
+8. **[QNX Integration Guide](qnx-integration.md)** - Complete system integrationdocumentation about the QNX-based Space Launch System simulation, covering everything from basic concepts to advanced deployment procedures.
 
 ## Document Overview
 
@@ -8,7 +20,13 @@ This directory contains comprehensive documentation about the QNX-based Space La
 
 **Start here if you're new to QNX or real-time systems:**
 
-1. **[QNX Overview](qnx-overview.md)** - Introduction to QNX Neutrino RTOS and why it's ideal for space systems
+1. **[QNX Simplified Guide](qnx-simplified.md)** - Easy-to-understand explanation of how QNX works
+   - What makes QNX different from regular operating systems
+   - Simple analogies and plain English explanations
+   - How QNX integrates with our rocket system
+   - Why it matters for space applications
+
+2. **[QNX Overview](qnx-overview.md)** - Introduction to QNX Neutrino RTOS and why it's ideal for space systems
    - Real-time guarantees and timing requirements
    - Microkernel architecture benefits
    - Safety certification standards (DO-178C, IEC 61508)
@@ -44,13 +62,19 @@ This directory contains comprehensive documentation about the QNX-based Space La
    - Shared memory usage
    - Code examples and best practices
 
-6. **[QNX Real-Time Features](qnx-realtime-features.md)** - Real-time capabilities
+6. **[QNX Simulation Implementation](qnx-simulation-implementation.md)** - How our simulation uses QNX technology
+   - Real QNX vs simulated QNX behavior
+   - Cross-platform development approach
+   - Practical code examples from our project
+   - Performance comparisons and validation
+
+7. **[QNX Real-Time Features](qnx-realtime-features.md)** - Real-time capabilities
    - Scheduling algorithms and priorities
    - Timing guarantees and deadline management
    - Interrupt handling and latency analysis
    - Performance optimization techniques
 
-7. **[QNX Integration Guide](qnx-integration.md)** - Complete system integration
+8. **[QNX Integration Guide](qnx-integration.md)** - Complete system integration
    - Full system stack from hardware to application
    - Process architecture with fault isolation
    - High-performance IPC implementation
@@ -61,7 +85,7 @@ This directory contains comprehensive documentation about the QNX-based Space La
 
 **Safety-critical design and operational procedures:**
 
-8. **[Safety & Fault Tolerance](safety-and-fault-tolerance.md)** - Safety-critical design
+9. **[Safety & Fault Tolerance](safety-and-fault-tolerance.md)** - Safety-critical design
    - Aerospace safety standards compliance
    - Fault detection and recovery mechanisms
    - Redundancy and failover strategies
@@ -77,25 +101,25 @@ This directory contains comprehensive documentation about the QNX-based Space La
 
 ### For Software Developers
 If you're implementing or modifying the system:
-1. [QNX Overview](qnx-overview.md) → [QNX Implementation](qnx-implementation.md) → [QNX Integration Guide](qnx-integration.md)
+1. [QNX Simplified Guide](qnx-simplified.md) → [QNX Overview](qnx-overview.md) → [QNX Implementation](qnx-implementation.md) → [QNX Simulation Implementation](qnx-simulation-implementation.md) → [QNX Integration Guide](qnx-integration.md)
 2. [Safety & Fault Tolerance](safety-and-fault-tolerance.md) for safety-critical patterns
 3. [QNX Real-Time Features](qnx-realtime-features.md) for performance optimization
 
 ### For System Operators
 If you're deploying or operating the system:
-1. [User Guide](user-guide.md) → [QNX Deployment Guide](qnx-deployment.md)
+1. [QNX Simplified Guide](qnx-simplified.md) → [User Guide](user-guide.md) → [QNX Deployment Guide](qnx-deployment.md)
 2. [Safety & Fault Tolerance](safety-and-fault-tolerance.md) for operational safety
 3. [QNX Overview](qnx-overview.md) for understanding system capabilities
 
 ### For Systems Engineers
 If you're designing or integrating the system:
-1. [System Design](system-design.md) → [Simulation Architecture](simulation-architecture.md)
+1. [QNX Simplified Guide](qnx-simplified.md) → [System Design](system-design.md) → [Simulation Architecture](simulation-architecture.md)
 2. [QNX Integration Guide](qnx-integration.md) for detailed integration patterns
 3. [QNX Real-Time Features](qnx-realtime-features.md) for timing analysis
 
 ### For Aerospace Engineers
 If you're evaluating the system for aerospace applications:
-1. [QNX Overview](qnx-overview.md) → [Safety & Fault Tolerance](safety-and-fault-tolerance.md)
+1. [QNX Simplified Guide](qnx-simplified.md) → [QNX Overview](qnx-overview.md) → [Safety & Fault Tolerance](safety-and-fault-tolerance.md)
 2. [QNX Real-Time Features](qnx-realtime-features.md) for timing requirements
 3. [QNX Deployment Guide](qnx-deployment.md) for operational considerations
 
