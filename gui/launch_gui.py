@@ -4,6 +4,7 @@ Space Launch System GUI
 A modern PyQt6 interface for monitoring and controlling the QNX space launch simulation.
 """
 
+import argparse
 import json
 import os
 import re
@@ -14,20 +15,40 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from PyQt6.QtCore import QPropertyAnimation, QRect, Qt, QThread, QTimer, pyqtSignal
-from PyQt6.QtGui import QColor, QFont, QIcon, QPalette, QPixmap
+import matplotlib.pyplot as plt
+import numpy as np
+import psutil
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+from PyQt6.QtCore import (
+    QPropertyAnimation,
+    QRect,
+    QSettings,
+    Qt,
+    QThread,
+    QTimer,
+    pyqtSignal,
+)
+from PyQt6.QtGui import QAction, QColor, QFont, QIcon, QPalette, QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QDoubleSpinBox,
     QFrame,
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
     QLabel,
     QMainWindow,
+    QMenuBar,
     QMessageBox,
     QProgressBar,
     QPushButton,
     QScrollArea,
+    QSlider,
+    QSpinBox,
     QSplitter,
     QStatusBar,
     QTabWidget,

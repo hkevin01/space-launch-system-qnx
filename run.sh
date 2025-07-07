@@ -15,11 +15,32 @@ echo "====================================="
 
 # Parse command line arguments first to handle --gui early
 GUI_MODE="false"
+GUI_ARGS=""
 for arg in "$@"; do
     case $arg in
         -g|--gui)
             GUI_MODE="true"
-            break
+            ;;
+        --gui-basic)
+            GUI_MODE="true"
+            GUI_ARGS="$GUI_ARGS --basic"
+            ;;
+        --gui-dev)
+            GUI_MODE="true"
+            GUI_ARGS="$GUI_ARGS --dev"
+            ;;
+        --gui-test)
+            GUI_MODE="true"
+            GUI_ARGS="$GUI_ARGS --test"
+            ;;
+        --gui-test-coverage)
+            GUI_MODE="true"
+            GUI_ARGS="$GUI_ARGS --test-coverage"
+            ;;
+        --gui-*)
+            GUI_MODE="true"
+            # Handle any other GUI arguments by stripping gui- prefix
+            GUI_ARGS="$GUI_ARGS --${arg#--gui-}"
             ;;
     esac
 done
@@ -29,7 +50,7 @@ if [ "$GUI_MODE" = "true" ]; then
     echo "Launching GUI mode..."
     echo ""
     if [ -f "$GUI_DIR/launch_gui.sh" ]; then
-        exec "$GUI_DIR/launch_gui.sh"
+        exec "$GUI_DIR/launch_gui.sh" $GUI_ARGS
     else
         echo "Error: GUI launcher not found: $GUI_DIR/launch_gui.sh"
         exit 1
@@ -76,6 +97,10 @@ while [[ $# -gt 0 ]]; do
             # Already handled above
             shift
             ;;
+        --gui-*)
+            # Already handled above
+            shift
+            ;;
         -d|--debug)
             DEBUG_MODE="true"
             shift
@@ -106,19 +131,27 @@ if [ "$SHOW_HELP" = "true" ]; then
     echo ""
     echo "Options:"
     echo "  -h, --help           Show this help message"
-    echo "  -g, --gui            Launch GUI mode instead of terminal"
+    echo "  -g, --gui            Launch Enhanced GUI mode instead of terminal"
+    echo "  --gui-basic          Launch Basic GUI mode"
+    echo "  --gui-dev            Launch GUI in development mode"
+    echo "  --gui-test           Run GUI test suite"
+    echo "  --gui-test-coverage  Run GUI tests with coverage"
     echo "  -d, --debug          Run in debug mode with GDB"
     echo "  -t, --time TIME      Set mission time (auto, now, t-600, etc.)"
     echo "  --now                Start at T-0 (immediate launch)"
     echo "  --t-TIME             Start at specific T-minus time (e.g., --t-600)"
     echo ""
     echo "Examples:"
-    echo "  $0                   # Run with default settings (T-2 hours)"
-    echo "  $0 --gui             # Launch GUI mode"
-    echo "  $0 --now             # Start at T-0 (immediate launch)"
-    echo "  $0 -t t-600          # Start at T-10 minutes"
-    echo "  $0 --debug           # Run in debug mode"
-    echo "  $0 -d --now          # Debug mode with immediate launch"
+    echo "  $0                       # Run with default settings (T-2 hours)"
+    echo "  $0 --gui                 # Launch Enhanced GUI mode"
+    echo "  $0 --gui-basic           # Launch Basic GUI mode"
+    echo "  $0 --gui-dev             # Launch GUI in development mode"
+    echo "  $0 --gui-test            # Run GUI test suite"
+    echo "  $0 --gui-test-coverage   # Run GUI tests with coverage"
+    echo "  $0 --now                 # Start at T-0 (immediate launch)"
+    echo "  $0 -t t-600              # Start at T-10 minutes"
+    echo "  $0 --debug               # Run in debug mode"
+    echo "  $0 -d --now              # Debug mode with immediate launch"
     echo ""
     exit 0
 fi

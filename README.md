@@ -56,12 +56,58 @@ cd space-launch-system-qnx
 # Build the project
 make all
 
-# Run simulation
+# Run simulation (terminal mode)
 make run
+
+# Run with Enhanced GUI
+./run.sh --gui
+
+# Run with Basic GUI
+./run.sh --gui-basic
+
+# Run GUI in development mode
+./run.sh --gui-dev
 
 # Run tests
 make test
+
+# Run GUI tests with coverage
+./run.sh --gui-test-coverage
 ```
+
+## 🖥️ User Interfaces
+
+### Enhanced GUI (Recommended)
+
+The enhanced GUI provides a modern PyQt6 interface with:
+
+- **Real-time Telemetry Plotting** - Live charts for altitude, velocity, acceleration
+- **System Performance Monitoring** - CPU, memory, and disk usage visualization  
+- **Mission Parameter Configuration** - Interactive mission setup dialogs
+- **Tabbed Interface** - Organized views for different operational aspects
+- **Advanced Controls** - Start/stop simulation, parameter adjustment
+
+Launch with: `./run.sh --gui` or `./run.sh --gui-enhanced`
+
+### Basic GUI
+
+A simplified interface for basic operations:
+
+- Essential telemetry display
+- Start/stop controls
+- Basic mission monitoring
+
+Launch with: `./run.sh --gui-basic`
+
+### Terminal Interface
+
+Traditional command-line interface for:
+
+- Automated operations
+- Debugging and development
+- Headless environments
+
+Launch with: `./run.sh` (default mode)
 
 ## 🎯 Features
 
@@ -104,12 +150,52 @@ System parameters can be configured via:
 
 ## 🧪 Testing
 
-The project includes comprehensive testing:
+The project includes comprehensive testing at multiple levels:
 
+### Core System Tests
 - Unit tests for individual components
 - Integration tests for subsystem communication
 - Stress tests for real-time performance
 - Fault injection tests for safety validation
+
+### GUI Testing Suite
+
+The GUI has its own comprehensive test suite with:
+
+- **Unit Tests** - Individual widget and component testing
+- **Integration Tests** - Complete workflow validation
+- **UI Interaction Tests** - Button clicks, menu actions, dialogs
+- **Performance Tests** - Real-time update speed and efficiency
+- **Stress Tests** - High-load scenarios and concurrent operations
+- **Error Handling Tests** - Invalid data and edge case handling
+
+#### Running GUI Tests
+
+```bash
+# Run all GUI tests
+./run.sh --gui-test
+
+# Run with coverage analysis and HTML reports
+./run.sh --gui-test-coverage
+
+# Use advanced test runner with options
+cd gui
+python run_tests.py --coverage --html-report --benchmark
+
+# Run specific test categories
+python run_tests.py --unit-only
+python run_tests.py --integration
+python run_tests.py --stress
+```
+
+#### Test Reports
+
+Tests generate comprehensive reports:
+- **HTML Test Report**: `gui/test_results/test_report.html`
+- **Coverage Report**: `gui/test_results/coverage/index.html`
+- **Performance Benchmarks**: Integrated in test output
+
+See [GUI Testing Guide](gui/GUI_TESTING.md) for detailed information.
 
 ## 📚 Documentation
 
