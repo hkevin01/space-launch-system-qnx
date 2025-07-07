@@ -146,8 +146,18 @@ export SLS_PROJECT_ROOT="$PROJECT_ROOT"
 export SLS_CONFIG_FILE="$PROJECT_ROOT/config/system.conf"
 export SLS_LOG_DIR="$PROJECT_ROOT/logs"
 
-# Force X11 backend for PyQt6 (helps with display issues)
-export QT_QPA_PLATFORM=xcb
+# Set up Qt platform - try Wayland first, then X11 fallback
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]] && command -v wayland-scanner &> /dev/null; then
+    echo "Detected Wayland session, trying Wayland backend first..."
+    export QT_QPA_PLATFORM=wayland
+else
+    echo "Using X11 backend..."
+    export QT_QPA_PLATFORM=xcb
+fi
+
+# Also set some additional Qt environment variables for better compatibility
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export QT_ENABLE_HIGHDPI_SCALING=1
 
 if [[ "$DEVELOPMENT_MODE" == "true" ]]; then
     export SLS_DEVELOPMENT_MODE="true"

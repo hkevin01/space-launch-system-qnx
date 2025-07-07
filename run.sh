@@ -48,6 +48,10 @@ done
 # If GUI mode requested, launch GUI immediately
 if [ "$GUI_MODE" = "true" ]; then
     echo "Launching GUI mode..."
+    echo "Display environment:"
+    echo "  DISPLAY: $DISPLAY"
+    echo "  WAYLAND_DISPLAY: $WAYLAND_DISPLAY"
+    echo "  XDG_SESSION_TYPE: $XDG_SESSION_TYPE"
     echo ""
     if [ -f "$GUI_DIR/launch_gui.sh" ]; then
         exec "$GUI_DIR/launch_gui.sh" $GUI_ARGS

@@ -1213,8 +1213,17 @@ def main():
             print(f"Available screen geometry: {screen_geometry}")
         
         # Force a specific position that should be visible
-        window.move(100, 100)  # Move to a visible position
-        print(f"Moved window to: (100, 100)")
+        # Use screen-relative positioning
+        if screen:
+            screen_rect = screen.availableGeometry()
+            # Position relative to screen's top-left
+            x = screen_rect.x() + 100
+            y = screen_rect.y() + 100
+            window.move(x, y)
+            print(f"Moved window to screen-relative position: ({x}, {y})")
+        else:
+            window.move(100, 100)
+            print("Moved window to fallback position: (100, 100)")
         
         window.show()
         print("Called show()")
