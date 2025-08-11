@@ -16,10 +16,14 @@ echo "====================================="
 # Parse command line arguments first to handle --gui early
 GUI_MODE="false"
 GUI_ARGS=""
+USE_DOCKER="false"
 for arg in "$@"; do
     case $arg in
         -g|--gui)
             GUI_MODE="true"
+            ;;
+        --docker)
+            USE_DOCKER="true"
             ;;
         --gui-basic)
             GUI_MODE="true"
@@ -47,6 +51,15 @@ done
 
 # If GUI mode requested, launch GUI immediately
 if [ "$GUI_MODE" = "true" ]; then
+    if [ "$USE_DOCKER" = "true" ]; then
+        echo "Launching GUI mode inside Docker..."
+        if [ -f "$PROJECT_ROOT/scripts/docker-run.sh" ]; then
+            exec "$PROJECT_ROOT/scripts/docker-run.sh" run --gui $GUI_ARGS
+        else
+            echo "Error: Docker helper not found: $PROJECT_ROOT/scripts/docker-run.sh"
+            exit 1
+        fi
+    fi
     echo "Launching GUI mode..."
     echo "Display environment:"
     echo "  DISPLAY: $DISPLAY"
@@ -65,7 +78,7 @@ fi
 if [ ! -f "$EXECUTABLE" ]; then
     echo "Simulation not built yet. Building now..."
     echo ""
-    
+
     # Try to build the project
     if [ -f "$PROJECT_ROOT/scripts/build.sh" ]; then
         "$PROJECT_ROOT/scripts/build.sh" debug
@@ -73,13 +86,13 @@ if [ ! -f "$EXECUTABLE" ]; then
         echo "Error: Build script not found. Please build manually with 'make'"
         exit 1
     fi
-    
+
     # Check again if build was successful
     if [ ! -f "$EXECUTABLE" ]; then
         echo "Error: Build failed. Executable not found: $EXECUTABLE"
         exit 1
     fi
-    
+
     echo ""
     echo "Build complete! Starting simulation..."
     echo ""
@@ -219,7 +232,7 @@ if [ "$DEBUG_MODE" = "true" ]; then
     echo "  (gdb) continue"
     echo "  (gdb) quit"
     echo ""
-    
+
     case "$MISSION_TIME" in
         "auto")
             gdb --args "$EXECUTABLE"
