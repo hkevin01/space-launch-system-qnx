@@ -21,6 +21,7 @@
 #include "common/sls_utils.h"
 #include "common/sls_ipc.h"
 #include "common/sls_logging.h"
+#include "common/cmd_server.h"
 
 // Global system state
 static volatile bool g_shutdown_requested = false;
@@ -97,6 +98,13 @@ static int initialize_system(void)
     signal(SIGTERM, signal_handler);
 
     sls_log(LOG_LEVEL_INFO, "MAIN", "Core system initialization complete");
+
+    // Start command server for GUI Chat
+    if (cmd_server_start() != 0)
+    {
+        sls_log(LOG_LEVEL_ERROR, "MAIN", "Failed to start command server");
+        // Continue without server; GUI Chat will show error
+    }
     return 0;
 }
 
@@ -315,6 +323,9 @@ static void shutdown_system(void)
     }
 
     // Cleanup systems
+    // Stop command server
+    cmd_server_stop();
+
     sls_ipc_cleanup();
     sls_utils_cleanup();
     sls_logging_cleanup();

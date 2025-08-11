@@ -1,3 +1,80 @@
+## Makefile — Space Launch System (POSIX + QNX)
+
+# OS selection: posix (default) | qnx
+OS ?= posix
+
+# Build type: release (default) | debug
+BUILD ?= release
+
+# Compiler/flags per OS
+ifeq ($(OS),qnx)
+  CC      := qcc
+  CFLAGS0 := -D_QNX_SOURCE
+  # QNX often needs -lrt, -lm, -lsocket and pthread
+  LDFLAGS := -pthread -lrt -lm -lsocket
+else
+  CC      := gcc
+  CFLAGS0 := -D_POSIX_MOCK
+  # Linux/macOS: pthread and math are sufficient
+  LDFLAGS := -pthread -lm
+endif
+
+CSTD    := -std=c11
+CWARN   := -Wall -Wextra -Werror
+ifeq ($(BUILD),debug)
+  COPT := -O0 -g
+else
+  COPT := -O2
+endif
+
+CFLAGS := $(CSTD) $(CWARN) $(COPT) $(CFLAGS0)
+
+# Paths
+SRC_DIR := src
+BLD_DIR := build
+BIN     := $(BLD_DIR)/sls_sim
+
+# Sources (all .c under src/ and subdirs)
+SRCS := $(shell find $(SRC_DIR) -type f -name '*.c')
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(BLD_DIR)/%.o,$(SRCS))
+
+# Includes
+INCLUDES := -I$(SRC_DIR) -I$(SRC_DIR)/common -I$(SRC_DIR)/subsystems -I$(SRC_DIR)/ui
+
+.PHONY: all clean run info
+
+all: info $(BIN)
+
+info:
+	@echo "Build Configuration:"
+	@echo "  OS       : $(OS)"
+	@echo "  CC       : $(CC)"
+	@echo "  BUILD    : $(BUILD)"
+	@echo "  CFLAGS   : $(CFLAGS)"
+	@echo "  LDFLAGS  : $(LDFLAGS)"
+	@echo "  OUTPUT   : $(BIN)"
+	@echo
+
+$(BIN): $(OBJS)
+	@mkdir -p $(dir $@)
+	@echo "Linking $@"
+	$(CC) $(OBJS) $(LDFLAGS) -o $@
+	@echo "Build complete: $@"
+
+# Object compilation
+$(BLD_DIR)/%.o: $(SRC_DIR)/%.c
+	@echo "Compiling $<"
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+run: $(BIN)
+	@echo "Starting $(BIN)"
+	$(BIN)
+
+clean:
+	@echo "Cleaning build artifacts..."
+	rm -rf $(BLD_DIR)
+
 # QNX Space Launch System Simulation Makefile
 
 # Detect if QNX environment is available
@@ -25,7 +102,7 @@ else
     LD = ld
     ARCH = x86_64
     PLATFORM_CFLAGS = -DMOCK_QNX_BUILD -D_GNU_SOURCE
-    PLATFORM_LDFLAGS = 
+    PLATFORM_LDFLAGS =
 endif
 
 # Project directories
