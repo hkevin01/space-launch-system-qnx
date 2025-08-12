@@ -1,123 +1,107 @@
-# QNX-Based Space Launch System Simulation
+# QNX Space Launch System Simulation
 
-A high-fidelity real-time simulation of a space launch system using QNX Neutrino RTOS, designed to emulate real-time conditions, subsystem communication, and fault-tolerant behavior for pre-launch and ascent operations.
+A real-time space launch system simulation demonstrating core QNX Neutrino RTOS features including native message passing, pulses/timers, resource managers, and slog2 logging.
 
-## 🚀 Project Overview
+## Overview
 
-This project simulates the key components of a space launch platform including:
+This QNX-only project showcases a simplified Flight Control Computer (FCC) service that communicates with an operator console via QNX message passing, generates telemetry through a resource manager, and logs system events with slog2.
 
-- **Flight Control Computer (FCC)** - Primary flight control and navigation
-- **Engine Control System** - Propulsion management and throttle control
-- **Telemetry & Communications** - Data collection and ground communication
-- **Environmental Monitoring** - Temperature, pressure, and vibration sensors
-- **Ground Support Interface** - Mission control integration
+### QNX Features Demonstrated
 
-## 🏗️ Architecture
+- **Message Passing**: name_attach/name_open with MsgSend/MsgReceive/MsgReply
+- **Pulses & Timers**: SIGEV_PULSE periodic simulation ticks
+- **Resource Manager**: /dev/sls_telemetry device with resmgr/iofunc
+- **Structured Logging**: slog2 buffer set "SLS" with component categorization
+- **Real-time Scheduling**: SCHED_RR thread priorities
 
-The system leverages QNX Neutrino RTOS features:
-
-- **Microkernel Architecture** - Inter-process communication (IPC) among subsystems
-- **Resource Managers** - Priority scheduling for real-time constraints
-- **Fault Isolation** - Redundant system design for safety-critical operations
-- **Deterministic Execution** - Predictable timing for mission-critical tasks
-
-## 📁 Project Structure
-
-```
-├── src/                    # Source code
-│   ├── subsystems/        # Individual subsystem implementations
-│   ├── common/            # Shared utilities and data structures
-│   ├── ui/                # User interface and dashboard
-│   └── main.c             # Main application entry point
-├── tests/                 # Unit and integration tests
-├── config/                # Configuration files
-├── scripts/               # Build and deployment scripts
-├── docs/                  # Documentation
-├── .github/               # GitHub workflows
-└── .copilot/              # Copilot configuration
-```
-
-## 🛠️ Building the Project
-
-### Prerequisites
-## Space Launch System Simulation — QNX Neutrino RTOS Demo
-
-This repository is now QNX-only and showcases core QNX Neutrino RTOS features working together in a simplified space launch system simulation.
-
-What you'll see running on QNX:
-- Native QNX message passing between an Operator Console and the Flight Control Computer (FCC) service
-- QNX pulses/timers driving periodic simulation ticks
-- QNX slog2 structured logging categorized by component
-- A minimal QNX resource manager exporting telemetry at /dev/sls_telemetry
-- Thread priorities suitable for a real-time system
-
-### QNX features demonstrated
-- Message passing: ChannelCreate/MsgReceive/MsgSend/MsgReply via name_attach/name_open helpers
-- Pulses and timers: SIGEV_PULSE with timer_create/timer_settime
-- Scheduling: SCHED_RR priorities for key threads
-- Resource manager: resmgr/iofunc device at /dev/sls_telemetry
-- Logging: slog2 buffer set "SLS" with INFO/WARN/ERROR macros
-
-## Build (QNX SDP 7.1+)
-
-Prerequisites: qcc, make on a QNX development host or a QNX target system.
-
-```sh
-make all
-```
-
-Outputs:
-- build/sls_qnx      — main simulation and FCC service
-- build/sls_console  — terminal operator console
-
-## Run
-
-```sh
-./scripts/qnx_run.sh
-```
-
-This will start the simulation and then launch the operator console.
-
-Operator console commands:
-- status
-- go
-- nogo
-- abort
-- throttle N   (N = 0..100)
-- quit
-
-Telemetry stream:
-```sh
-cat /dev/sls_telemetry
-```
-Example line: `1691000000.123,alt=12.34,vel=3.21,thr=70,go=1`
-
-Logs (on target):
-```sh
-slog2info -l | grep SLS
-```
-
-## Repo layout
+## Project Structure
 
 ```
 src/
-	qnx/           # QNX IPC, pulses, resource manager, main
-	common/        # slog2 wrapper
-	ui/            # Operator console (text UI)
+├── qnx/                   # QNX-specific implementations
+│   ├── main_qnx.c        # Main simulation + FCC service
+│   ├── ipc.{h,c}         # Message passing & pulse abstractions
+│   └── rmgr_telemetry.{h,c} # Telemetry resource manager
+├── common/
+│   └── slog.{h,c}        # slog2 wrapper with component macros
+└── ui/
+    └── console.c         # Text-based operator console
 scripts/
-	qnx_build.sh   # Build helper
-	qnx_run.sh     # Run helper (starts sim + console)
-Makefile         # QNX-only build (qcc)
+├── qnx_build.sh          # Build helper script
+└── qnx_run.sh            # Run helper (starts sim + console)
 ```
 
-## Removed components (for maintainers)
+## Build & Run
 
-The following non-QNX artifacts are deprecated and should be deleted if present:
-- gui/ (PyQt6 GUI and tests)
-- podman/ and docker/* (containerization, noVNC)
-- .github/workflows/* that assume Ubuntu/Linux GUI testing
-- POSIX mock shims and Python requirements not needed on QNX
+### Prerequisites
+
+- QNX SDP 7.1+ with qcc compiler
+- make utility
+
+### Build
+
+```bash
+make all
+```
+
+**Outputs:**
+
+- `build/sls_qnx` — main simulation and FCC service
+- `build/sls_console` — terminal operator console
+
+### Run
+
+```bash
+./scripts/qnx_run.sh
+```
+
+This starts the simulation and then launches the operator console.
+
+**Operator console commands:**
+
+- `status` — show current system state
+- `go` — approve mission proceed
+- `nogo` — mission hold
+- `abort` — emergency abort
+- `throttle N` — set throttle (N = 0..100)
+- `quit` — exit console
+
+**Telemetry stream:**
+
+```bash
+cat /dev/sls_telemetry
+```
+
+Example line: `1691000000.123,alt=12.34,vel=3.21,thr=70,go=1`
+
+**System logs:**
+
+```bash
+slog2info -l | grep SLS
+```
+
+## Repository Layout
+
+```text
+src/
+    qnx/           # QNX IPC, pulses, resource manager, main
+    common/        # slog2 wrapper
+    ui/            # Operator console (text UI)
+scripts/
+    qnx_build.sh   # Build helper
+    qnx_run.sh     # Run helper (starts sim + console)
+Makefile           # QNX-only build (qcc)
+```
+
+## Removed Components
+
+The following non-QNX artifacts have been removed:
+
+- `gui/` (PyQt6 GUI and tests)
+- `podman/` and `docker/` (containerization, noVNC)
+- `.github/workflows/` (Linux GUI CI)
+- POSIX mock shims not needed on QNX
 
 ## License
 
-MIT License. See LICENSE.
+MIT License
