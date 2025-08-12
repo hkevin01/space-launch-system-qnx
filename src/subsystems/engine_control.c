@@ -11,6 +11,7 @@
 #include "../common/sls_utils.h"
 #include "../common/sls_ipc.h"
 #include "../common/sls_logging.h"
+#include "../common/cmd_server.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -92,6 +93,9 @@ void *engine_control_thread(void *arg)
     struct timespec loop_start, loop_end, sleep_time;
     const long loop_period_ns = (1000000000L / config->update_rate_hz);
 
+    // Track last command state
+    int last_go = -1;
+
     while (!g_ecs_shutdown)
     {
         clock_gettime(CLOCK_MONOTONIC, &loop_start);
@@ -99,6 +103,44 @@ void *engine_control_thread(void *arg)
         // Calculate time delta
         double dt = sls_time_diff(&g_ecs_state.last_update, &loop_start);
         g_ecs_state.last_update = loop_start;
+
+        // Apply external commands from command server
+        int go_cmd = cmd_get_mission_go();
+        int throttle_cmd = cmd_get_engine_throttle();
+
+        // Clamp throttle and map to thrust percentage
+        if (throttle_cmd < 0) throttle_cmd = 0;
+        if (throttle_cmd > 100) throttle_cmd = 100;
+
+        // Transition detection for go/nogo
+        if (last_go != go_cmd)
+        {
+            if (go_cmd)
+            {
+                // Start ignition sequence if not already running
+                if (!g_ecs_state.ignition_sequence_active && !g_ecs_state.shutdown_sequence_active)
+                {
+                    g_ecs_state.ignition_sequence_active = true;
+                    sls_log(LOG_LEVEL_INFO, "ECS", "Command: GO -> starting ignition sequence");
+                }
+            }
+            else
+            {
+                // If GO removed, initiate shutdown; treat as abort if throttle already zero
+                if (!g_ecs_state.shutdown_sequence_active)
+                {
+                    g_ecs_state.shutdown_sequence_active = true;
+                    sls_log(LOG_LEVEL_WARNING, "ECS", "Command: NOGO/ABORT -> initiating shutdown sequence");
+                }
+            }
+            last_go = go_cmd;
+        }
+
+        // Apply throttle command to all engines' commanded thrust
+        for (int i = 0; i < NUM_ENGINES; i++)
+        {
+            g_ecs_state.engines[i].engine_params.thrust_percentage = (double)throttle_cmd;
+        }
 
         // Process ignition sequence if active
         if (g_ecs_state.ignition_sequence_active)
